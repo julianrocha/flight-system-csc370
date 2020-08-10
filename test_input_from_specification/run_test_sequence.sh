@@ -12,7 +12,7 @@ python3 ../solution/add_aircraft.py  aircraft.txt
 python3 ../solution/manage_flights.py flights.txt
 python3 ../solution/manage_reservations.py reservations.txt
 
-#python3 ../solution/report_all_flights.py > output_report_all_flights.txt
-#python3 ../solution/report_aircraft.py > output_report_aircraft.txt
-#python3 ../solution/report_itinerary.py 12346 > output_report_itinerary_12346.txt
-#python3 ../solution/report_itinerary.py 12348 > output_report_itinerary_12348.txt    
+python3 ../solution/report_all_flights.py > output_report_all_flights.txt
+python3 ../solution/report_aircraft.py > output_report_aircraft.txt
+python3 ../solution/report_itinerary.py 12346 > output_report_itinerary_12346.txt
+python3 ../solution/report_itinerary.py 12348 > output_report_itinerary_12348.txt    

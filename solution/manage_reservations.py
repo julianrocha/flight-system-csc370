@@ -21,6 +21,7 @@ psql_port = 5432
 
 conn = psycopg2.connect(dbname=psql_db,user=psql_user,password=psql_password,host=psql_server,port=psql_port)
 cursor = conn.cursor()
+cursor.execute('set constraints all deferred;')
 
 with open(input_filename) as f:
     for row in csv.reader(f):
@@ -42,6 +43,10 @@ with open(input_filename) as f:
                 cursor.execute("insert into reservations values (%s,%s);", (passenger_id,flight_id))
             elif action.upper() == 'DELETE':
                 cursor.execute("delete from reservations where passenger_id = %s and flight_id = %s;",(passenger_id,flight_id))
+                if cursor.rowcount != 1:
+                    print("Error: reservation (%s,%s) does not exist to be deleted", passenger_id, flight_id, file=sys.stderr)
+                    conn.rollback()
+                    break
         except psycopg2.ProgrammingError as err: 
             #ProgrammingError is thrown when the database error is related to the format of the query (e.g. syntax error)
             print("Caught a ProgrammingError:",file=sys.stderr)
@@ -62,7 +67,14 @@ with open(input_filename) as f:
             print(err,file=sys.stderr)
             conn.rollback()
             break
-
-conn.commit()
+try:
+    conn.commit()
+except psycopg2.IntegrityError as err: 
+    #IntegrityError occurs when a constraint (primary key, foreign key, check constraint or trigger constraint) is violated.
+    print("Caught an IntegrityError:",file=sys.stderr)
+    print(err,file=sys.stderr)
+except psycopg2.InternalError as err:  
+    print("Caught an IntegrityError:",file=sys.stderr)
+    print(err,file=sys.stderr)
 cursor.close()
-conn.close()	
+conn.close()    	

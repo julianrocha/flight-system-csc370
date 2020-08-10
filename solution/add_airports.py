@@ -59,7 +59,14 @@ with open(input_filename) as f:
             print(err,file=sys.stderr)
             conn.rollback()
             break
-
-conn.commit()
+try:
+    conn.commit()
+except psycopg2.IntegrityError as err: 
+    #IntegrityError occurs when a constraint (primary key, foreign key, check constraint or trigger constraint) is violated.
+    print("Caught an IntegrityError:",file=sys.stderr)
+    print(err,file=sys.stderr)
+except psycopg2.InternalError as err:  
+    print("Caught an IntegrityError:",file=sys.stderr)
+    print(err,file=sys.stderr)
 cursor.close()
 conn.close()	
